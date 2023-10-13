@@ -1,4 +1,6 @@
 # Import all required directries
+import base64
+import os
 import pytesseract
 import cv2
 from pyzbar.pyzbar import decode
@@ -13,6 +15,15 @@ pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesse
 # to transform the image into black and white color code
 def get_image(image_path):
     return cv2.imread(image_path)
+
+def get_image_base64(image_path):
+    with open(image_path, 'rb') as image_file:
+        image_data = base64.b64encode(image_file.read()).decode('utf-8')
+        image_url = f'/api/get_image/{os.path.basename(image_path)}'
+    return image_data, image_url
+
+def get_image_uri(image_path):
+    return f'/api/get_image/{os.path.basename(image_path)}'
 
 # to transform the image into black and white color code
 def gray_image(image):
