@@ -11,10 +11,11 @@ def add_item(expiry_date, cursor, front_image_path, back_image_path):
     # expired_items = cursor.fetchall()
     # for item in expired_items:
     #     print(item)
+    userid = 1
     cursor.execute('''INSERT INTO items (user_id, front_image_path, back_image_path, expiry_date, created_date, last_modified_date, is_notified, is_expired, is_removed, is_archived)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                        (
-                        1,
+                        userid,
                         front_image_path,
                         back_image_path,
                         expiry_date,
@@ -56,6 +57,13 @@ def get_all_unexpired_items(cursor):
 def get_all_items(cursor):
     cursor.execute('''SELECT back_image_path, expiry_date, created_date, id  FROM items;''')
     return cursor.fetchall()
+
+def get_item_id(cursor, back_image_path):
+    print('Entered into Get Item ID')
+    cursor.execute('''SELECT id FROM items where back_image_path = ? LIMIT 1;''', (back_image_path,))
+    get_item_id_value = cursor.fetchone()  # Use fetchone() to get a single result
+    print('got item id', get_item_id_value)
+    return get_item_id_value
 
 def get_expired_items(cursor):
     cursor.execute('''SELECT id FROM items WHERE is_expired = 1  and is_removed = 0;''')

@@ -44,7 +44,7 @@ def send_data():
 
 
 # -----------------------------------------------------------------
-# -----------------------------------------------------------------   send image and expiry date of one item
+# -----------------------------------------------------------------   send image path and expiry date of all item
 @app.route('/api/get_all_items', methods=['GET'])
 def send_all_item_data():
     print('Entered into the get_all_items API.')
@@ -56,10 +56,11 @@ def send_all_item_data():
     data = get_all_items(cursor)
     items = []
     for row in data:        # Iterate through the data and replace front_image_path with actual image data
-        front_image_path, expiry_date, created_date, id = row
+        back_image_path, expiry_date, created_date, id = row
         updated_row = {
                     'expiry_date': expiry_date,
                     'created_date': created_date,
+                    'back_image_path': back_image_path[1:],
                     'item_id': id
         }
         items.append(updated_row)
@@ -69,6 +70,8 @@ def send_all_item_data():
     print(expiry_date)
     return jsonify({"items": items}), 200
 
+
+# -----------------------------------------------------------------
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0',debug=True)

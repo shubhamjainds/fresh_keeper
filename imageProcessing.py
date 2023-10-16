@@ -4,7 +4,7 @@ import os
 import pytesseract
 import cv2
 from pyzbar.pyzbar import decode
-from dbFunctions import add_item
+from dbFunctions import add_item, get_item_id
 from textprocessing import get_dates, format_dates
 import time
 
@@ -89,7 +89,7 @@ def get_text_from_images_pytesseract(cropped_parts):
 # -----------------------------------------------
 # scan image and get expiry date main Algorithm
 def scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor):
-    max_date = '01/01/2020'
+    max_date = '01/01/2000'
     max_rotations = 4
     formatted_dates = None
     image = get_image(back_image_path)
@@ -114,16 +114,21 @@ def scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor):
         else:
             print('Identified dates: ', formatted_dates)
             break
-    try:
+    # try:
+    print('before max date.')
+    if formatted_dates:
         max_date = max(formatted_dates)
-        print("Add item called !!", max_date)
-        time.sleep(5)
-        add_item(max_date, cursor, front_image_path, back_image_path)
-        time.sleep(5)
-        print("Add item called !!")
+    print("Calling add_time with ", max_date)
+        # time.sleep(5)
+    add_item(max_date, cursor, front_image_path, back_image_path)
+    print("Came back from add_item.")
+    item_id = get_item_id(cursor, back_image_path)
+        # time.sleep(5)
+    print("Item_id values has been assigned.")
 
-    except:
-        print("No valid date identified in the image.")    
-    return max_date      
+    # except:
+        # print("No valid date identified in the image.")    
+    
+    return max_date, item_id    
 
 # ----------------------------
