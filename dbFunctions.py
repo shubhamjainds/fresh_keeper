@@ -6,16 +6,11 @@ today = datetime.today().date()
 
 # ------------------------------------------------------------
 # insert the collected item data into the database table
-def add_item(expiry_date, cursor, front_image_path, back_image_path):
-    # cursor.execute('''SELECT * FROM items WHERE expiry_date > date('now', '-7 days') and is_notified = 0  and is_expired = 0;''')
-    # expired_items = cursor.fetchall()
-    # for item in expired_items:
-    #     print(item)
-    userid = 1
+def add_item(cursor, user_id, front_image_path, back_image_path, expiry_date):
     cursor.execute('''INSERT INTO items (user_id, front_image_path, back_image_path, expiry_date, created_date, last_modified_date, is_notified, is_expired, is_removed, is_archived)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+        VALUES (?, ?, ?, ?, ?, ?)''',
                        (
-                        userid,
+                        user_id,
                         front_image_path,
                         back_image_path,
                         expiry_date,
@@ -27,27 +22,14 @@ def add_item(expiry_date, cursor, front_image_path, back_image_path):
                         0))     # is_archived
     print('Item added into the items table.')
 
-# def add_item(expiry_date, cursor, front_image_path, back_image_path):
-#     cursor.execute('''INSERT INTO items (
-#                         created_date, expiry_date, updated_date, image_path, item_state, is_expired, is_removed, is_notified) 
-#                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-#                        (today,  # created_date_value
-#                         expiry_date,
-#                         today,  # updated_date_value
-#                         front_image_path,
-#                         'Fresh',
-#                         0,      # is_expired
-#                         0,      # is_removed
-#                         0))     # is_deleted
-#     print('Item added into the items table.')    
 
 # ------------------------------------------------------------ SELECT
-def get_items_expiring_today(cursor, user_id):
-    cursor.execute('''SELECT back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date = date('now') and ?;''', user_id)
+def db_get_items_expiring_today(cursor, user_id):
+    cursor.execute('''SELECT front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date = date('now') and is_removed = 0 and user_id =?;''', (user_id,))
     return cursor.fetchall()
 
-def get_items_expiring_in_next_7_days(cursor):
-    cursor.execute('''SELECT * FROM items WHERE expiry_date > date('now', '-7 days') and is_notified = 0  and is_expired = 0;''')
+def db_get_items_expiring_in_next_7_days(cursor, user_id):
+    cursor.execute('''SELECT * FROM items WHERE expiry_date > date('now', '-7 days') and is_removed = 0 and user_id =?;''', (user_id,))
     return cursor.fetchall()
 
 def get_all_unexpired_items(cursor):
@@ -76,6 +58,10 @@ def get_item_details(cursor, item_id):
     return expiry_date
 
 # ------------------------------------------------------------ UPDATE
+def db_set_expiry_date(cursor, user_id, item_id, expiry_date):
+    cursor.execute('''UPDATE items SET expiry_date = ? WHERE id =? and user_id = ?''', (expiry_date, item_id, user_id,))
+    print('Item ',item_id,' has been updated with expiry_date as ?.', (item_id, expiry_date,))
+
 def set_item_removed(cursor, item_id):
     cursor.execute('''UPDATE items SET is_removed = 1 WHERE id =?''', (item_id,))
     print('Item ',item_id,' has been removed.')

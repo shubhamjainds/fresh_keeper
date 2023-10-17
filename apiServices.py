@@ -90,7 +90,7 @@ def api_front_and_back_image():
             print('the max date')
             return_obj ={
                 'expiry_date': expiry_date,
-                'image_id': item_id,
+                'item_id': item_id,
             }
             conn.commit() # Commit the changes
             return jsonify({"message": return_obj}), 201

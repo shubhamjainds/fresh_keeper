@@ -88,8 +88,8 @@ def get_text_from_images_pytesseract(cropped_parts):
 # -----------------------------------------------
 # -----------------------------------------------
 # scan image and get expiry date main Algorithm
-def scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor):
-    max_date = '01/01/2000'
+def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image_path):
+    expiry_date = '01/01/2000'
     max_rotations = 4
     formatted_dates = None
     image = get_image(back_image_path)
@@ -117,10 +117,10 @@ def scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor):
     # try:
     print('before max date.')
     if formatted_dates:
-        max_date = max(formatted_dates)
-    print("Calling add_time with ", max_date)
+        expiry_date = max(formatted_dates)
+    print("Calling add_time with ", expiry_date)
         # time.sleep(5)
-    add_item(max_date, cursor, front_image_path, back_image_path)
+    add_item(cursor, user_id, front_image_path, back_image_path, expiry_date)
     print("Came back from add_item.")
     item_id = get_item_id(cursor, back_image_path)
         # time.sleep(5)
@@ -129,6 +129,6 @@ def scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor):
     # except:
         # print("No valid date identified in the image.")    
     
-    return max_date, item_id    
+    return expiry_date, item_id    
 
 # ----------------------------
