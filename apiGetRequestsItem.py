@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import os
-from dbFunctions import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today
+from dbFunctionsItem import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today
 import sqlite3
 from datetime import datetime
 

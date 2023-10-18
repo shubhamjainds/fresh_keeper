@@ -1,7 +1,8 @@
 # Import all required directries
 import sqlite3
+from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability, db_create_user, db_delete_user
 from imageProcessing import scan_image_and_get_expiry_date
-from dbFunctions import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today, get_expired_items, set_item_notified, set_item_removed
+from dbFunctionsItem import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today, get_expired_items, set_item_notified
 
 with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new database
     cursor = conn.cursor() # Create a cursor object to execute SQL queries
@@ -30,6 +31,23 @@ with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new datab
 # for item in data:
 #      print(item)
 
+# ------------------------------db_create_user
+db_create_user(cursor, 'Sakshi', 'Jain', 'def@gmail.com', '1234567890', 'newpassword')
+
+# ------------------------------db_delete_user
+# user_id = '3'
+# db_delete_user(cursor, user_id)
+
+# ------------------------------email address availability
+# email_address = 'shubhamdpj@gmail.com'
+# status = db_check_email_availability(cursor, email_address)
+# print(status)
+
+# ------------------------------ phone number availability
+
+# phone_number = 123456789
+# status = db_check_phone_number_availability(cursor, phone_number)
+# print(status)
 # ------------------------------
 
 conn.commit() # Commit the changes

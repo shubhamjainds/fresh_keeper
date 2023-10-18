@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import os
-from dbFunctions import db_get_items_expiring_today, get_all_items, get_item_details
+from dbFunctionsItem import db_get_items_expiring_today, get_all_items, get_item_details
 from imageProcessing import get_image, get_image_base64, scan_image_and_get_expiry_date
 import sqlite3
 from datetime import datetime

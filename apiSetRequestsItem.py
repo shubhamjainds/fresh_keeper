@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import os
-from dbFunctions import db_set_expiry_date
+from dbFunctionsItem import db_set_expiry_date, db_set_item_removed
 from imageProcessing import scan_image_and_get_expiry_date
 import sqlite3
 from datetime import datetime
@@ -55,7 +55,7 @@ def api_set_front_and_back_image():
         finally:           
             conn.close()  
 
-# ----------------------------------------------------------------- Get image and send expiry date
+# ----------------------------------------------------------------- Update the expiry date of item
 @app.route('/api/set_expiry_date', methods=['POST'])
 def api_set_expiry_date():
     print('Enter into api_set_expiry_date.')
@@ -67,12 +67,35 @@ def api_set_expiry_date():
     print('expiry_date', expiry_date, 'has been collected.')
     with sqlite3.connect('fresh_keeper') as conn:
         cursor = conn.cursor()
-    print('Going to Call function db_set_expiry_date.')
-    db_set_expiry_date(cursor, user_id, item_id, expiry_date)
-    print('Returned from function db_set_expiry_date.')
-    conn.commit()
-    conn.close()
-    return jsonify({"items": "Success"}), 200 
+    print('Calling function db_set_expiry_date.')
+    try:
+        db_set_expiry_date(cursor, user_id, item_id, expiry_date)
+        print('Returned from function db_set_expiry_date.')
+        conn.commit()
+        conn.close()
+        return jsonify({"Status": "Success"}), 200 
+    except:
+        return jsonify({"Status": "Failed"}), 200 
+
+# ----------------------------------------------------------------- Remove the item from the lists
+@app.route('/api/set_item_removed', methods=['POST'])
+def api_set_item_removed():
+    print('Enter into set_item_removed.')
+    user_id = request.args.get('id')
+    print('user_id', user_id, 'has been collected.')
+    item_id = request.args.get('itemId')
+    print('item_id', item_id, 'has been collected.')
+    with sqlite3.connect('fresh_keeper') as conn:
+        cursor = conn.cursor()
+    print('Calling function db_set_item_removed.')
+    try:
+        db_set_item_removed(cursor, user_id, item_id)
+        print('Returned from function db_set_item_removed.')
+        conn.commit()
+        conn.close()
+        return jsonify({"Status": "Success"}), 200 
+    except:
+        return jsonify({"Status": "Failed"}), 200 
 
 # -----------------------------------------------------------------
 if __name__ == '__main__':

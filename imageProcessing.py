@@ -4,9 +4,8 @@ import os
 import pytesseract
 import cv2
 from pyzbar.pyzbar import decode
-from dbFunctions import add_item, get_item_id
+from dbFunctionsItem import add_item, db_get_item_id
 from textprocessing import get_dates, format_dates
-import time
 
 # Setting pytesseract path
 pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
@@ -122,7 +121,7 @@ def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image
         # time.sleep(5)
     add_item(cursor, user_id, front_image_path, back_image_path, expiry_date)
     print("Came back from add_item.")
-    item_id = get_item_id(cursor, back_image_path)
+    item_id = db_get_item_id(cursor, back_image_path)
         # time.sleep(5)
     print("Item_id values has been assigned.")
 

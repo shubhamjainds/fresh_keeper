@@ -1,51 +1,6 @@
---READY TO USE----------------------------------------------------
-----
-----SET
-/api/set_front_and_back_image
-file: apiSetRequestsItem.py
-method: POST
-input: fileFront, fileBack, userId
-output: Object[expiry_date, item_id]
-frontend comments:
-----
-/api/set_expiry_date
-file: apiSetRequestsItem.py
-method: POST
-input: user_id, item_id, expiry_date
-output: na
-frontend comments:
-----
-----GET
-/api/get_items_expiring_today
-file: apiGetRequestsItem.py
-method: GET
-input: id
-output: Object[front_image_path, back_image_path, expiry_date, created_date, item_id]
-frontend comments:
-----
-/api/get_items_expiring_in_next_7_days
-file: apiGetRequestsItem.py
-method: GET
-input: id
-output: Object[front_image_path, back_image_path, expiry_date, created_date, item_id]
-frontend comments:
-----
-/api/get_all_items
-file: getImagesInfo.py
-method: GET
-input: id
-output: Object[expiry_date, created_date, back_image_path, item_id]
-frontend comments:
-----
---QA----------------------------------------------------
-----
-/api/get_items_expiring_today
-file: getImagesInfo.py
-method: GET
-input: id
-output: Object[front_image_path, back_image_path, expiry_date, created_date, user_id]
-frontend comments:
-----
+Switched to below file:
+https://docs.google.com/spreadsheets/d/1VV7X4e-drXR6z-d6zF2qohisy5Wbk8r1jY0J_wFnJlA/edit#gid=0
+
 
 --NOT READY TO USE----------------------------------------------------
 ----
@@ -57,10 +12,8 @@ output: expiry_date
 
 ----
 
-update expiry date
 all expired products
 all unexpired products
-remove product
 
 registeration
 login
