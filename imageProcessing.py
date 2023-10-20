@@ -1,5 +1,6 @@
 # Import all required directries
 import base64
+import datetime
 import os
 import pytesseract
 import cv2
@@ -88,7 +89,7 @@ def get_text_from_images_pytesseract(cropped_parts):
 # -----------------------------------------------
 # scan image and get expiry date main Algorithm
 def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image_path):
-    expiry_date = '01/01/2000'
+    expiry_date = '2000-10-21'
     max_rotations = 4
     formatted_dates = None
     image = get_image(back_image_path)
@@ -97,7 +98,9 @@ def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image
     for _ in range(max_rotations):
         text = get_text_pytesseract(image)
         dates = get_dates(text)
+        print('dates', dates)
         formatted_dates = format_dates(dates)
+        print('formatted_dates', formatted_dates)
         # print("inside the loop", _)
         if not formatted_dates:
             print("No valid date found in the image, croping the image and trying again.")

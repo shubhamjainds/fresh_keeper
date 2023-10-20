@@ -20,10 +20,10 @@ with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new datab
 
 
 # ------------------------------db_get_items_expiring_today
-# user_id = 1
-# data = db_get_items_expiring_today(cursor, user_id)
-# for item in data:
-#      print(item)
+user_id = 1
+data = db_get_items_expiring_today(cursor, user_id)
+for item in data:
+     print(item)
 
 # ------------------------------db_get_items_expiring_in_next_7_days
 # user_id = 1
@@ -32,7 +32,7 @@ with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new datab
 #      print(item)
 
 # ------------------------------db_create_user
-db_create_user(cursor, 'Sakshi', 'Jain', 'def@gmail.com', '1234567890', 'newpassword')
+# db_create_user(cursor, 'Sakshi', 'Jain', 'def@gmail.com', '1234567890', 'newpassword')
 
 # ------------------------------db_delete_user
 # user_id = '3'
@@ -48,6 +48,13 @@ db_create_user(cursor, 'Sakshi', 'Jain', 'def@gmail.com', '1234567890', 'newpass
 # phone_number = 123456789
 # status = db_check_phone_number_availability(cursor, phone_number)
 # print(status)
+
+
+# user_id = db_login_check(cursor, 'def@gmail.com', 'newpassword')
+# print(user_id)
+
+
+
 # ------------------------------
 
 conn.commit() # Commit the changes
