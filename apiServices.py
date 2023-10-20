@@ -1,15 +1,14 @@
 import random
-from flask import Flask, request, jsonify
+import sqlite3
 import os
+from flask import Flask, request, jsonify
 from SMTP import SMTP_send_email
+from datetime import datetime
 from apiSetRequestsItem import set_front_and_back_image
 from apiSetRequestsUser import create_user_account
 from dbFunctionsItem import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today, db_set_expiry_date, db_set_item_removed, get_item_details
-from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability
+from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability, db_login_check_credential
 from imageProcessing import scan_image_and_get_expiry_date
-import sqlite3
-from datetime import datetime
-import time
 
 app = Flask(__name__)
 
@@ -100,10 +99,10 @@ def api_set_expiry_date():
     print('Enter into api_set_expiry_date.')
     user_id = request.args.get('id')
     print('user_id', user_id, 'has been collected.')
-    item_id = request.args.get('itemId')
+    item_id = request.json.get('itemId')
     print('item_id', item_id, 'has been collected.')
-    expiry_date = request.args.get('itemId')
-    print('expiry_date', expiry_date, 'has been collected.')
+    expiry_date = request.json.get('expiryDate')
+    print('expiry_date', expiry_date, 'has been collected.')  
     with sqlite3.connect('fresh_keeper') as conn:
         cursor = conn.cursor()
     print('Calling function db_set_expiry_date.')
@@ -178,6 +177,22 @@ def api_check_phone_number_availability():
     conn.commit()
     conn.close()  
     return jsonify({"isPhoneNumber": db_check_phone_number_availability_value}), 200 
+
+# ----------------------------------------------------------------- login check
+@app.route('/api/check_login_credential', methods=['GET'])
+def api_check_login_credential():
+    print('Enter into API check_login_credential.')
+    with sqlite3.connect('fresh_keeper') as conn:
+                cursor = conn.cursor()
+    email_address = request.args.get('emailAddress')
+    password = request.args.get('password')
+    print('Parameters Recieved.', email_address, password)
+    print('Calling db_phone_number_availability')
+    user_id = db_login_check_credential(cursor, email_address, password)
+    print('Return from db_check_email_availability with value: ', user_id)
+    conn.commit()
+    conn.close()  
+    return jsonify({"User_id": user_id}), 200 
 # ======================================================================================================User-SET
 # ----------------------------------------------------------------- create_user_account
 @app.route('/api/create_user_account', methods=['POST'])

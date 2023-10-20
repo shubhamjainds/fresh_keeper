@@ -22,12 +22,12 @@ def format_dates(dates):
     formatted_dates = []
     for date in dates:
         try:
-            formatted_date = datetime.strptime(date, '%d/%m/%Y').date()
-            formatted_dates.append(formatted_date)
+            formatted_date = datetime.strptime(date, '%d/%m/%Y')
+            formatted_dates.append(formatted_date.strftime('%Y-%m-%d'))
         except ValueError:
             try:
-                formatted_date = datetime.strptime(date, '%d/%m/%y').date()
-                formatted_dates.append(formatted_date)
+                formatted_date = datetime.strptime(date, '%d/%m/%y')
+                formatted_dates.append(formatted_date.strftime('%Y-%m-%d'))
             except ValueError:
-                    print(f"Unable to parse date: {date}")
+                print(f"Unable to parse date: {date}")
     return formatted_dates

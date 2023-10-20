@@ -12,6 +12,11 @@ def db_create_user(cursor, first_name, last_name, email_address, phone_number, p
     print('User ',first_name, last_name, ' added into the users table.')
 
 # ----------------------------------------
+def db_login_check_credential(cursor, email_address, password):
+    cursor.execute('''SELECT id FROM users WHERE email_address = ?  and password = ? LIMIT 1;''', (email_address, password))
+    return cursor.fetchone()[0]
+
+# ----------------------------------------
 def db_delete_user(cursor, user_id):
     cursor.execute('''DELETE FROM users WHERE id = ?''',
                         (user_id))     
@@ -46,3 +51,4 @@ def db_get_user_id_from_email_address(cursor, email_address):
     user_id = cursor.fetchone()[0]  # Use fetchone() to get a single result
     print('User Id', user_id, 'from', email_address )
     return user_id
+

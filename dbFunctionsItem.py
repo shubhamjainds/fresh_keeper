@@ -4,7 +4,7 @@ from datetime import datetime
 # Setting up few variables
 today = datetime.today().date()
 
-# ------------------------------------------------------------ INSERY
+# ------------------------------------------------------------ INSERT
 # insert the collected item data into the database table
 def add_item(cursor, user_id, front_image_path, back_image_path, expiry_date):
     cursor.execute('''INSERT INTO items (user_id, front_image_path, back_image_path, expiry_date, created_date, last_modified_date, is_notified, is_expired, is_removed, is_archived)
@@ -23,7 +23,7 @@ def add_item(cursor, user_id, front_image_path, back_image_path, expiry_date):
 def db_get_item_id(cursor, back_image_path):
     print('Entered into Get Item ID')
     cursor.execute('''SELECT id FROM items where back_image_path = ? LIMIT 1;''', (back_image_path,))
-    get_item_id_value = cursor.fetchone()  # Use fetchone() to get a single result
+    get_item_id_value = cursor.fetchone()[0]  # Use fetchone() to get a single result
     print('got item id', get_item_id_value)
     return get_item_id_value
 
@@ -32,7 +32,7 @@ def db_get_items_expiring_today(cursor, user_id):
     return cursor.fetchall()
 
 def db_get_items_expiring_in_next_7_days(cursor, user_id):
-    cursor.execute('''SELECT * FROM items WHERE expiry_date > date('now', '-7 days') and is_removed = 0 and user_id =?;''', (user_id,))
+    cursor.execute('''SELECT front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date > date('now', '-7 days') and is_removed = 0 and user_id =?;''', (user_id,))
     return cursor.fetchall()
 
 def get_all_unexpired_items(cursor):
@@ -40,7 +40,7 @@ def get_all_unexpired_items(cursor):
     return cursor.fetchall()
 
 def get_all_items(cursor):
-    cursor.execute('''SELECT back_image_path, expiry_date, created_date, id FROM items;''')
+    cursor.execute('''SELECT CASE WHEN front_image_path IS NULL THEN back_image_path ELSE front_image_path END AS front_image_path, expiry_date, created_date, id FROM items;''')
     return cursor.fetchall()
 
 def get_expired_items(cursor):
@@ -52,6 +52,7 @@ def get_item_details(cursor, item_id):
     expiry_date = cursor.fetchall()
     print('Item s expiry date is ',expiry_date)
     return expiry_date
+
 
 # ------------------------------------------------------------ UPDATE
 def db_set_expiry_date(cursor, user_id, item_id, expiry_date):
