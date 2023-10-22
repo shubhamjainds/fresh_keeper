@@ -24,10 +24,10 @@ def set_front_and_back_image(front_image_file, back_image_file, user_id):
     back_image_file.save(back_image_path)
     with sqlite3.connect('fresh_keeper') as conn:
         cursor = conn.cursor()
-    print('Calling function scan_image_and_get_expiry_date')
+    print('[',user_id,']','Calling function scan_image_and_get_expiry_date')
     try:
         expiry_date, item_id = scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image_path)
-        print('Returned from function scan_image_and_get_expiry_date with:', "item id: ", item_id, "expiry date: ", expiry_date)
+        print('[',user_id,']','Returned from function scan_image_and_get_expiry_date with:', "item id: ", item_id, "expiry date: ", expiry_date)
         return_obj ={
             'expiry_date': expiry_date,
             'item_id': item_id,
