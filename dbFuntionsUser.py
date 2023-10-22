@@ -1,14 +1,14 @@
 def db_create_user(cursor, first_name, last_name, email_address, phone_number, password):
-    print('Emailed into db_create_user')
+    print('Entered into db_create_user')
     cursor.execute('''INSERT INTO users (First_name, Last_name, Email_address, Phone_number, password, is_email_verified, Is_phone_verified, All_notifications, Notify_expiring_7_days, Notify_expiring_today)
-        VALUES (?, ?, ?, ?, ?, 0, 0, 1, 1, 1)''',
+        VALUES (?, ?, ?, ?, ?, 1, 0, 1, 1, 1)''',
                         (
                         first_name,
                         last_name,
                         email_address,
                         phone_number,
                         password,
-                        ))     # is_archived
+                        ))    
     print('User ',first_name, last_name, ' added into the users table.')
 
 # ----------------------------------------

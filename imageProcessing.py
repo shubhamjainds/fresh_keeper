@@ -89,7 +89,8 @@ def get_text_from_images_pytesseract(cropped_parts):
 # -----------------------------------------------
 # scan image and get expiry date main Algorithm
 def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image_path):
-    expiry_date = '2000-10-21'
+    expiry_date = datetime.date.today()
+    expiry_date = expiry_date.strftime("%Y-%m-%d")
     max_rotations = 4
     formatted_dates = None
     image = get_image(back_image_path)
@@ -98,35 +99,35 @@ def scan_image_and_get_expiry_date(cursor, user_id, front_image_path, back_image
     for _ in range(max_rotations):
         text = get_text_pytesseract(image)
         dates = get_dates(text)
-        print('dates', dates)
+        print('[',user_id,']','dates', dates)
         formatted_dates = format_dates(dates)
-        print('formatted_dates', formatted_dates)
+        print('[',user_id,']','formatted_dates', formatted_dates)
         # print("inside the loop", _)
         if not formatted_dates:
-            print("No valid date found in the image, croping the image and trying again.")
+            print('[',user_id,']',"No valid date found in the image, croping the image and trying again.")
             cropped_image = crop_image(image, 3, 2)
             text = get_text_from_images_pytesseract(cropped_image)
             dates = get_dates(text)
             formatted_dates = format_dates(dates)
             # print("if one", _)
         if not formatted_dates:
-            print("No valid date found in the image, rotating the image by 90 degree and trying again.", _)
+            print('[',user_id,']',"No valid date found in the image, rotating the image by 90 degree and trying again.", _)
             image = rotate_image(image)
             # print("if two", _)
         else:
-            print('Identified dates: ', formatted_dates)
+            print('[',user_id,']','Identified dates: ', formatted_dates)
             break
     # try:
-    print('before max date.')
+    print('[',user_id,']','before max date.')
     if formatted_dates:
         expiry_date = max(formatted_dates)
-    print("Calling add_time with ", expiry_date)
+    print('[',user_id,']',"Calling add_time with ", expiry_date)
         # time.sleep(5)
     add_item(cursor, user_id, front_image_path, back_image_path, expiry_date)
-    print("Came back from add_item.")
-    item_id = db_get_item_id(cursor, back_image_path)
+    print('[',user_id,']',"Came back from add_item.")
+    item_id = db_get_item_id(cursor, back_image_path, user_id)
         # time.sleep(5)
-    print("Item_id values has been assigned.")
+    print('[',user_id,']',"Item_id values has been assigned.")
 
     # except:
         # print("No valid date identified in the image.")    

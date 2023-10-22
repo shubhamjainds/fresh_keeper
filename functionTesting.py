@@ -1,8 +1,11 @@
 # Import all required directries
+from datetime import date
+from email.utils import formatdate
 import sqlite3
 from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability, db_create_user, db_delete_user
 from imageProcessing import scan_image_and_get_expiry_date
 from dbFunctionsItem import db_get_items_expiring_in_next_7_days, db_get_items_expiring_today, get_expired_items, set_item_notified
+from textprocessing import get_dates
 
 with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new database
     cursor = conn.cursor() # Create a cursor object to execute SQL queries
@@ -19,11 +22,11 @@ with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new datab
 #     print("Expiry Date: ", Expiry_date)
 
 
-# ------------------------------db_get_items_expiring_today
-user_id = 1
-data = db_get_items_expiring_today(cursor, user_id)
-for item in data:
-     print(item)
+# # ------------------------------db_get_items_expiring_today
+# user_id = 1
+# data = db_get_items_expiring_today(cursor, user_id)
+# for item in data:
+#      print(item)
 
 # ------------------------------db_get_items_expiring_in_next_7_days
 # user_id = 1
@@ -32,8 +35,12 @@ for item in data:
 #      print(item)
 
 # ------------------------------db_create_user
-# db_create_user(cursor, 'Sakshi', 'Jain', 'def@gmail.com', '1234567890', 'newpassword')
+# db_create_user(cursor, 'Sakshi', 'Jain', 'defdsdasf@gmail.com', '1234567890', 'newpassword')
 
+today = date.today()
+formatted_date = today.strftime("%Y-%m-%d")
+
+print(formatted_date)
 # ------------------------------db_delete_user
 # user_id = '3'
 # db_delete_user(cursor, user_id)

@@ -17,22 +17,26 @@ def add_item(cursor, user_id, front_image_path, back_image_path, expiry_date):
                         today,  # created_date_value
                         today   # updated_date_value
                         ))     
-    print('Item added into the items table.')
+    print('[',user_id,']','Item added into the items table.')
 
 # ------------------------------------------------------------ SELECT
-def db_get_item_id(cursor, back_image_path):
-    print('Entered into Get Item ID')
+def db_get_item_id(cursor, back_image_path, user_id):
+    print('[',user_id,']','Entered into Get Item ID')
     cursor.execute('''SELECT id FROM items where back_image_path = ? LIMIT 1;''', (back_image_path,))
     get_item_id_value = cursor.fetchone()[0]  # Use fetchone() to get a single result
-    print('got item id', get_item_id_value)
+    print('[',user_id,']','item id', get_item_id_value)
     return get_item_id_value
 
 def db_get_items_expiring_today(cursor, user_id):
-    cursor.execute('''SELECT front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date = date('now') and is_removed = 0 and user_id =?;''', (user_id,))
+    cursor.execute('''SELECT CASE WHEN front_image_path IS NULL THEN back_image_path ELSE front_image_path END AS front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date = date('now') and is_removed = 0 and user_id =?;''', (user_id,))
     return cursor.fetchall()
 
 def db_get_items_expiring_in_next_7_days(cursor, user_id):
-    cursor.execute('''SELECT front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date > date('now', '-7 days') and is_removed = 0 and user_id =?;''', (user_id,))
+    cursor.execute('''SELECT CASE WHEN front_image_path IS NULL THEN back_image_path ELSE front_image_path END AS front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE expiry_date < date('now', '+7 days') and expiry_date > date('now') and is_removed = 0 and user_id =?;''', (user_id,))
+    return cursor.fetchall()
+
+def db_get_all_items_unremoved(cursor, user_id):
+    cursor.execute('''SELECT CASE WHEN front_image_path IS NULL THEN back_image_path ELSE front_image_path END AS front_image_path, back_image_path, expiry_date, created_date, id FROM items WHERE is_removed = 0 and user_id =?;''', (user_id,))
     return cursor.fetchall()
 
 def get_all_unexpired_items(cursor):
@@ -57,11 +61,12 @@ def get_item_details(cursor, item_id):
 # ------------------------------------------------------------ UPDATE
 def db_set_expiry_date(cursor, user_id, item_id, expiry_date):
     cursor.execute('''UPDATE items SET expiry_date = ? WHERE id =? and user_id = ?''', (expiry_date, item_id, user_id,))
-    print('Item ',item_id,' has been updated with expiry_date as ?.', (item_id, expiry_date,))
+    print('[',user_id,']','Item ',item_id,' has been updated with expiry_date as ?.', (item_id, expiry_date,))
 
-def db_set_item_removed(cursor, item_id):
-    cursor.execute('''UPDATE items SET is_removed = 1 WHERE id =?''', (item_id,))
-    print('Item ',item_id,' has been removed.')
+def db_set_item_removed(cursor, user_id, item_id):
+    print('Entered into db_set_item_removed')
+    cursor.execute('''UPDATE items SET is_removed = 1 WHERE id =? and user_id = ?''', (item_id, user_id,))
+    print('[',user_id,']','Item ',item_id,' has been removed.')
 
 def set_item_notified(cursor, item_id):
     cursor.execute('''UPDATE items SET is_notified = 1 WHERE id =?''', (item_id,))
