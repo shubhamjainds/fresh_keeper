@@ -52,3 +52,11 @@ def db_get_user_id_from_email_address(cursor, email_address):
     print('User Id', user_id, 'from', email_address )
     return user_id
 
+# ---------------------------------------- Reset Password
+def db_reset_password(cursor, email_address, password):
+    cursor.execute('''UPDATE users SET password = ? WHERE email_address = ?;''', (password, email_address))
+    print('Password updaet for user', email_address)
+    cursor.execute('''SELECT id FROM users where Email_address = ? LIMIT 1;''', (email_address,))
+    user_id = cursor.fetchone()[0]  # Use fetchone() to get a single result
+    print('User Id', user_id, 'from', email_address )
+    return user_id

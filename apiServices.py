@@ -7,7 +7,7 @@ from datetime import datetime
 from apiSetRequestsItem import set_front_and_back_image
 from apiSetRequestsUser import create_user_account
 from dbFunctionsItem import db_get_all_items_unremoved, db_get_items_expiring_in_next_7_days, db_get_items_expiring_today, db_set_expiry_date, db_set_item_removed, get_item_details
-from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability, db_login_check_credential
+from dbFuntionsUser import db_check_email_availability, db_check_phone_number_availability, db_login_check_credential, db_reset_password
 from imageProcessing import scan_image_and_get_expiry_date
 
 app = Flask(__name__)
@@ -248,6 +248,20 @@ def api_create_user_account():
     print('User ID: ', user_id)
     return jsonify({"userId": user_id}), 200 
 
+# ----------------------------------------------------------------- reset password
+@app.route('/api/reset_password', methods=['POST'])
+def api_reset_password():
+    print('Enter into API reset_password.')
+    email_address = request.form.get('emailAddress')
+    password = request.form.get('password')
+    print('Parameters Recieved.', email_address, password)
+    with sqlite3.connect('fresh_keeper') as conn:
+                cursor = conn.cursor()
+    print('Calling db_reset_password')
+    user_id = db_reset_password(cursor, email_address, password)
+    print('Returning from  API reset_password with', user_id)
+    return jsonify({"userId": user_id}), 200 
+
 
 
 
@@ -263,115 +277,6 @@ def api_create_user_account():
 # -----------------------------------------------------------------
 
 
-
-
-
-# # =====================================================================================
-# # ----------------------------------------------------------------- Get image and send expiry date
-# @app.route('/api/upload_image', methods=['POST'])
-# def upload_image():
-    
-#     Expiry_date = ""
-#     if 'file' not in request.files:
-#         return jsonify({"error": "No file part"}), 400
-#     file = request.files['file']
-#     if file.filename == '':
-#         return jsonify({"error": "No selected file"}), 400
-#     if file:
-#         filename = os.path.join(app.config['UPLOAD_FOLDER'], (file.filename))
-#         file.save(filename)
-#         back_image_path = './item_images/image.jpeg'
-#         try:
-#             with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new database
-#                 cursor = conn.cursor() # Create a cursor object to execute SQL queries
-#             front_image_path = None
-#             Expiry_date = scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor)
-#             print('came back from scan_image_and_get_expiry_date')
-#             if not Expiry_date:
-#                 conn.commit() # Commit the changes
-#                 return jsonify({"message": "No result found"}), 201
-#             else:
-#                 conn.commit() # Commit the changes
-#                 return jsonify({"message": Expiry_date}), 201
-            
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             # conn.rollback()  # Roll back the transaction in case of an error
-#         finally:           
-#             conn.close() # Close the connection   
-
-# # ----------------------------------------------------------------- Get image and send expiry date
-# @app.route('/api/front_and_back_image', methods=['POST'])
-# def api_front_and_back_image():
-#     print('Enter into API front_and_back_image')
-#     expiry_date = ""
-#     if 'fileFront' not in request.files:
-#         return jsonify({"error": "No file part"}), 400
-#     front_image_file = request.files['fileFront']
-#     print('got front')
-#     back_image_file = request.files['fileBack']
-#     print('got back')
-#     user_id = request.args.get('userId')
-#     print('got userid')
-#     if back_image_file.filename == '':
-#         return jsonify({"error": "No selected file"}), 400
-#     if back_image_file:
-#         # filename = os.path.join(app.config['UPLOAD_FOLDER'], (back_image_file.filename))
-#         current_timestamp = str(datetime.timestamp(datetime.now()))
-#         front_image_path = UPLOAD_FOLDER + user_id + '_' + current_timestamp + '_front' + '.jpeg'
-#         front_image_file.save(front_image_path)
-#         print(front_image_path)
-#         back_image_path = UPLOAD_FOLDER + user_id + '_' + current_timestamp + '_back' + '.jpeg'
-#         back_image_file.save(back_image_path)
-#         print(back_image_path)
-        
-#         try:
-#             with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new database
-#                 cursor = conn.cursor() # Create a cursor object to execute SQL queries
-#             print('Going to call scan_image_and_get_expiry_date')
-#             expiry_date, item_id = scan_image_and_get_expiry_date(front_image_path, back_image_path, cursor)
-#             print('Came back from scan_image_and_get_expiry_date')
-#             print(item_id)
-#             print(expiry_date)
-#             print('the max date')
-#             return_obj ={
-#                 'expiry_date': expiry_date,
-#                 'item_id': item_id,
-#             }
-#             conn.commit() # Commit the changes
-#             return jsonify({"message": return_obj}), 201
-
-
-#             # if not Expiry_date:
-#             #     conn.commit() # Commit the changes
-#             #     return jsonify({"message": "No result found"}), 201
-#             # else:
-#             #     conn.commit() # Commit the changes
-#             #     return jsonify({"message": Expiry_date}), 201
-            
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             # conn.rollback()  # Roll back the transaction in case of an error
-#         finally:           
-#             conn.close() # Close the connection   
-
-# # -----------------------------------------------------------------   send expiry date of one item
-# @app.route('/api/get_data', methods=['GET'])
-# def send_data():
-#     print('entered into the api')
-#     user_id = request.args.get('id')
-#     print('user_id has been collected')
-#     print(user_id)
-#     with sqlite3.connect('fresh_keeper') as conn: # Connect to or create a new database
-#         cursor = conn.cursor() # Create a cursor object to execute SQL queries
-#     print('going to call the get_item_details function')
-#     expiry_date = get_item_details(cursor, user_id)
-#     print('1',expiry_date)
-#     conn.commit() # Commit the changes
-
-#     conn.close() # Close the connection   
-#     print(expiry_date)
-#     return jsonify({"message": expiry_date}), 201
 
 
 # -----------------------------------------------------------------
